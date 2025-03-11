@@ -161,9 +161,71 @@
                 const randomType = selectedTypes[Math.floor(Math.random() * selectedTypes.length)];
                 square.className = randomType;
                 if(showBorder) square.classList.add('with-border');
+                
+                // Add click handler if clicking is enabled
+                if(document.getElementById('allow_click').checked) {
+                    square.addEventListener('click', function() {
+                        const currentTypeIndex = selectedTypes.indexOf(this.className.split(' ')[0]);
+                        const nextTypeIndex = (currentTypeIndex + 1) % selectedTypes.length;
+                        this.className = selectedTypes[nextTypeIndex];
+                        if(showBorder) this.classList.add('with-border');
+                    });
+                }
+                
                 container.appendChild(square);
             }
         }
+
+        // Add event listener for border checkbox
+        document.getElementById('border').addEventListener('change', function() {
+            const container = document.getElementById('grid-container');
+            const squares = container.getElementsByTagName('div');
+            const showBorder = this.checked;
+            
+            container.style.border = showBorder ? '1px solid black' : 'none';
+            
+            for(let square of squares) {
+                if(showBorder) {
+                    square.classList.add('with-border');
+                } else {
+                    square.classList.remove('with-border');
+                }
+            }
+        });
+
+        // Add event listener for allow click checkbox
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create and add the allow click checkbox
+            const controlsDiv = document.querySelector('.controls');
+            const clickDiv = document.createElement('div');
+            clickDiv.innerHTML = `
+                <label for="allow_click">Allow Click to Change:</label>
+                <input type="checkbox" id="allow_click">
+            `;
+            controlsDiv.insertBefore(clickDiv, controlsDiv.lastElementChild);
+
+            // Add change listener to update click handlers when allow click is toggled
+            document.getElementById('allow_click').addEventListener('change', function() {
+                const container = document.getElementById('grid-container');
+                const squares = container.getElementsByTagName('div');
+                const allowClick = this.checked;
+                const showBorder = document.getElementById('border').checked;
+                
+                for(let square of squares) {
+                    if(allowClick) {
+                        square.addEventListener('click', function() {
+                            const selectedTypes = Array.from(document.querySelectorAll('input[name="type"]:checked')).map(cb => cb.value);
+                            const currentTypeIndex = selectedTypes.indexOf(this.className.split(' ')[0]);
+                            const nextTypeIndex = (currentTypeIndex + 1) % selectedTypes.length;
+                            this.className = selectedTypes[nextTypeIndex];
+                            if(showBorder) this.classList.add('with-border');
+                        });
+                    } else {
+                        square.replaceWith(square.cloneNode(true));
+                    }
+                }
+            });
+        });
 
         // Generate initial grid
         generateGrid();
