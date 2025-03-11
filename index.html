@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kohs Blocks</title>
+    <style>
+        .container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+
+        .controls {
+            margin: 20px;
+        }
+
+        .checkbox-group {
+            margin: 10px 0;
+        }
+
+        /* Base square styles */
+        .square_bottom_left,
+        .square_bottom_right,
+        .square_top_left,
+        .square_top_right,
+        .square_red,
+        .square_white {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            background-color: white;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        .with-border {
+            border: 1px solid black;
+        }
+
+        /* Bottom Left Triangle */
+        .square_bottom_left::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 100px solid red;
+            border-top: 100px solid transparent;
+            bottom: 0;
+            left: 0;
+        }
+
+        /* Bottom Right Triangle */
+        .square_bottom_right::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-right: 100px solid red;
+            border-top: 100px solid transparent;
+            bottom: 0;
+            right: 0;
+        }
+
+        /* Top Left Triangle */
+        .square_top_left::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 100px solid red;
+            border-bottom: 100px solid transparent;
+            top: 0;
+            left: 0;
+        }
+
+        /* Top Right Triangle */
+        .square_top_right::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-right: 100px solid red;
+            border-bottom: 100px solid transparent;
+            top: 0;
+            right: 0;
+        }
+
+        /* Full Red Square */
+        .square_red {
+            background-color: red;
+        }
+
+        /* Full White Square */
+        .square_white {
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <div>
+            <label for="rows">Number of Rows:</label>
+            <input type="number" id="rows" min="1" value="2">
+        </div>
+        <div>
+            <label for="cols">Number of Columns:</label>
+            <input type="number" id="cols" min="1" value="2">
+        </div>
+        <div class="checkbox-group">
+            <label>Select Square Types:</label><br>
+            <input type="checkbox" id="top_left" checked> Top Left Triangle<br>
+            <input type="checkbox" id="top_right" checked> Top Right Triangle<br>
+            <input type="checkbox" id="bottom_left" checked> Bottom Left Triangle<br>
+            <input type="checkbox" id="bottom_right" checked> Bottom Right Triangle<br>
+            <input type="checkbox" id="full_red" checked> Full Red<br>
+            <input type="checkbox" id="full_white" checked> Full White
+        </div>
+        <div>
+            <label for="border">Show Border:</label>
+            <input type="checkbox" id="border" checked>
+        </div>
+        <button onclick="generateGrid()">Generate Grid</button>
+    </div>
+
+    <div id="grid-container"></div>
+
+    <script>
+        function generateGrid() {
+            const rows = parseInt(document.getElementById('rows').value);
+            const cols = parseInt(document.getElementById('cols').value);
+            const showBorder = document.getElementById('border').checked;
+            
+            // Get selected square types
+            const selectedTypes = [];
+            if(document.getElementById('top_left').checked) selectedTypes.push('square_top_left');
+            if(document.getElementById('top_right').checked) selectedTypes.push('square_top_right');
+            if(document.getElementById('bottom_left').checked) selectedTypes.push('square_bottom_left');
+            if(document.getElementById('bottom_right').checked) selectedTypes.push('square_bottom_right');
+            if(document.getElementById('full_red').checked) selectedTypes.push('square_red');
+            if(document.getElementById('full_white').checked) selectedTypes.push('square_white');
+
+            if(selectedTypes.length === 0) {
+                alert('Please select at least one square type');
+                return;
+            }
+
+            const container = document.getElementById('grid-container');
+            container.innerHTML = '';
+            container.style.display = 'grid';
+            container.style.gridTemplateColumns = `repeat(${cols}, 100px)`;
+            container.style.gridTemplateRows = `repeat(${rows}, 100px)`;
+            container.style.gap = '0';
+            if(showBorder) container.style.border = '1px solid black';
+            else container.style.border = 'none';
+
+            for(let i = 0; i < rows * cols; i++) {
+                const square = document.createElement('div');
+                const randomType = selectedTypes[Math.floor(Math.random() * selectedTypes.length)];
+                square.className = randomType;
+                if(showBorder) square.classList.add('with-border');
+                container.appendChild(square);
+            }
+        }
+
+        // Generate initial grid
+        generateGrid();
+    </script>
+</body>
+</html>
